@@ -36,6 +36,9 @@ public class Ball (Texture2D texture, Texture2D pixelTexture)
     private bool finishing = false;
     private float alpha = 1f;
 
+    private Point ricochetScoreRange = new Point(10, 15);
+    private Point finishScoreRange = new Point(100, 110);
+
     public void Update(GameTime gameTime)
     {
         elapsedTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -161,6 +164,7 @@ public class Ball (Texture2D texture, Texture2D pixelTexture)
                                 break;
                         }
                         LogsSystem.Log($"Calculated ricochet: x{direction.X} y{direction.Y}; side: {side}");
+                        GameScene.Instance.ScoreUp(Random.Shared.Next(ricochetScoreRange.X, ricochetScoreRange.Y));
 
                         checkedRicochet = true;
                         break;
@@ -200,6 +204,8 @@ public class Ball (Texture2D texture, Texture2D pixelTexture)
         Position = finishPos;
         finishing = true;
         controllsEnabled = false;
+        GameScene.Instance.ScoreUp(Random.Shared.Next(finishScoreRange.X, finishScoreRange.Y));
+        Console.WriteLine("Finish entered");
     }
 
     private void FinishAnim()
@@ -207,7 +213,6 @@ public class Ball (Texture2D texture, Texture2D pixelTexture)
         alpha -= 1f * elapsedTime;
         if (alpha <= 0f)
             alpha = 0f;
-        Console.WriteLine($"Aplha: {alpha}");
 
         Size -= new Vector2(1f, 1f);
         Position += new Vector2(0.5f, 0.5f);

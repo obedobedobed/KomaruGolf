@@ -12,6 +12,9 @@ public class GameScene
     private Ball ball;
     public List<Tile> Tiles { get; private set; } = new List<Tile>();
 
+    private int score = 0;
+    private Vector2 scorePos = new Vector2(6, 2);
+
     public static GameScene Instance { get; private set; }
 
     public void Load(ContentManager Content)
@@ -28,12 +31,17 @@ public class GameScene
         ball.Update(gameTime);
     }
 
+    public void ScoreUp(int score)
+    {
+        this.score += score;
+    }
+
     public void Draw(SpriteBatch spriteBatch)
     {
         foreach (var tile in Tiles)
             tile.Draw(spriteBatch);
         
         ball.Draw(spriteBatch);
-        // TextSystem.DrawString("hello world", spriteBatch, Vector2.Zero);
+        spriteBatch.DrawString(Game1.Font, $"Score: {score}", scorePos, Color.White);
     }
 }
