@@ -6,17 +6,22 @@ namespace KomaruGolf;
 
 public class Game1 : Game
 {
-    private GraphicsDeviceManager _graphics;
+    public GraphicsDeviceManager Graphics { get; private set; }
     private SpriteBatch _spriteBatch;
+
+    public static Game1 Instance { get; private set; }
 
     private Scenes currentScene = Scenes.Menu;
 
     private MenuScene menuScene = new MenuScene();
     private GameScene gameScene = new GameScene();
 
+    public static SpriteFont Font;
+    public static SpriteFont BigFont;
+
     public Game1()
     {
-        _graphics = new GraphicsDeviceManager(this);
+        Graphics = new GraphicsDeviceManager(this);
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
     }
@@ -26,6 +31,7 @@ public class Game1 : Game
         // TODO: Add your initialization logic here
 
         currentScene = Scenes.Game;
+        Instance = this;
 
         base.Initialize();
     }
@@ -37,6 +43,8 @@ public class Game1 : Game
         // TODO: use this.Content to load your game content here
         
         TextSystem.SetFont(Content.Load<Texture2D>("Sprites/Font"));
+        Font = Content.Load<SpriteFont>("Fonts/Arial");
+        BigFont = Content.Load<SpriteFont>("Fonts/BigArial");
         gameScene.Load(Content);
     }
 
