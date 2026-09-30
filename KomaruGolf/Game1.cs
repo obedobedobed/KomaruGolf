@@ -19,25 +19,43 @@ public class Game1 : Game
     public static SpriteFont Font;
     public static SpriteFont BigFont;
 
+    private const int VIRTUAL_WIDTH = 780;
+    private const int VIRTUAL_HEIGHT = 480;
+    private RenderTarget2D renderTarget;
+
     public Game1()
     {
+        LogsSystem.Log("Called Game1 class constructor");
         Graphics = new GraphicsDeviceManager(this);
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
+
+        Graphics.PreferredBackBufferWidth = 780;
+        Graphics.PreferredBackBufferHeight = 480;
+
+        int width = Graphics.PreferredBackBufferWidth;
+        int height = Graphics.PreferredBackBufferHeight;
+        LogsSystem.Log($"Running in {width}x{height} window");
+
     }
 
     protected override void Initialize()
     {
+        LogsSystem.Log("Initializing...");
+
         // TODO: Add your initialization logic here
 
         currentScene = Scenes.Game;
         Instance = this;
+        renderTarget = new RenderTarget2D(GraphicsDevice, VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
 
         base.Initialize();
     }
 
     protected override void LoadContent()
     {
+        LogsSystem.Log("Loading content...");
+
         _spriteBatch = new SpriteBatch(GraphicsDevice);
 
         // TODO: use this.Content to load your game content here
@@ -69,11 +87,12 @@ public class Game1 : Game
 
     protected override void Draw(GameTime gameTime)
     {
+        GraphicsDevice.SetRenderTarget(renderTarget);
         GraphicsDevice.Clear(Color.CornflowerBlue);
 
         // TODO: Add your drawing code here
 
-        _spriteBatch.Begin(blendState: BlendState.AlphaBlend);
+        _spriteBatch.Begin();
 
         switch (currentScene)
         {
@@ -84,6 +103,19 @@ public class Game1 : Game
                 break;
         }
 
+        _spriteBatch.End();
+
+        GraphicsDevice.SetRenderTarget(null);
+        GraphicsDevice.Clear(Color.Black);
+
+        int winHeight = Graphics.PreferredBackBufferHeight;
+        int winWidth = Graphics.PreferredBackBufferWidth;
+
+        float sizeMod = (float)winHeight / VIRTUAL_HEIGHT;
+        int xOffset = (int)((winWidth - VIRTUAL_WIDTH * sizeMod) / 2);
+
+        _spriteBatch.Begin();
+        _spriteBatch.Draw(renderTarget, new Rectangle(xOffset, 0, (int)(VIRTUAL_WIDTH * sizeMod), winHeight), Color.White);
         _spriteBatch.End();
 
         base.Draw(gameTime);
