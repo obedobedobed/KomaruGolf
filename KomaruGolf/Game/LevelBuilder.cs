@@ -44,6 +44,12 @@ public static class LevelBuilder
 
                         finalList.Add(fTile);
                         break;
+                    case '0':
+                        var wtTile = new Water();
+                        wtTile.Load(new Vector2(xPos, yPos));
+
+                        finalList.Add(wtTile);
+                        break;
                 }
 
                 xPos += Tile.TILE_SIZE;

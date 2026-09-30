@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using KomaruGolf.Tiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -7,7 +9,9 @@ namespace KomaruGolf;
 
 public class Ball (Texture2D texture, Texture2D pixelTexture)
 {
+    private Vector2 firstPosition;
     public Vector2 Position { get; private set; } = new Vector2(400, 200);
+    private Vector2 firstSize;
     public Vector2 Size { get; private set; } = new Vector2(60, 60);
     private Texture2D texture = texture;
     private Texture2D pixelTexture = pixelTexture;
@@ -34,20 +38,49 @@ public class Ball (Texture2D texture, Texture2D pixelTexture)
     private bool controllsEnabled = true;
 
     private bool finishing = false;
+    private bool drowning = false;
     private float alpha = 1f;
+
+    private const float AFTER_WATER_RESPAWN_TIME = 2f;
+    private float awRespawnTimeNow = AFTER_WATER_RESPAWN_TIME;
 
     private Point ricochetScoreRange = new Point(10, 15);
     private Point finishScoreRange = new Point(100, 110);
 
+    private bool firstUpdate = true;
+
     public void Update(GameTime gameTime)
     {
         elapsedTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+        if (firstUpdate)
+        {
+            firstPosition = Position;
+            firstSize = Size;
+
+            firstUpdate = false;
+        }
 
         if (speed != 0f)
             Move();
 
         if (finishing)
             FinishAnim();
+
+        if (drowning)
+        {
+            DrowningAnim();
+            if ((awRespawnTimeNow -= elapsedTime) <= 0)
+            {
+                drowning = false;
+                awRespawnTimeNow = AFTER_WATER_RESPAWN_TIME;
+                Position = firstPosition;
+                Size = firstSize;
+                controllsEnabled = true;
+                alpha = 1f;
+                LogsSystem.Log("After water respawn");
+            }
+        }
 
         var mouse = Mouse.GetState();
 
@@ -103,7 +136,7 @@ public class Ball (Texture2D texture, Texture2D pixelTexture)
             {
                 switch (tile.Type)
                 {
-                    case Tiles.TileType.Wall:
+                    case TileType.Wall:
                         if (checkedRicochet)
                             break;
 
@@ -168,12 +201,26 @@ public class Ball (Texture2D texture, Texture2D pixelTexture)
 
                         checkedRicochet = true;
                         break;
-                    case Tiles.TileType.Ground:
+                    case TileType.Ground:
                         if (tile.isFinish)
                         {
                             StartFinishAnim(tile.Position);
                             return;
                         }
+                        break;
+                    case TileType.Water:
+                        bool intersectGround = false;
+
+                        foreach (var _tile in GameScene.Instance.Tiles)
+                            if (_tile.Rectangle.Intersects(nextRect) && _tile.Type == TileType.Ground)
+                            {
+                                intersectGround = true;
+                                break;
+                            }
+
+                        if (intersectGround) break;
+
+                        StartDrowningAnim();
                         break;
                 }
             }
@@ -205,10 +252,29 @@ public class Ball (Texture2D texture, Texture2D pixelTexture)
         finishing = true;
         controllsEnabled = false;
         GameScene.Instance.ScoreUp(Random.Shared.Next(finishScoreRange.X, finishScoreRange.Y));
-        Console.WriteLine("Finish entered");
+        GameScene.Instance.EndGame();
+        LogsSystem.Log("Finished level");
     }
 
     private void FinishAnim()
+    {
+        alpha -= 1f * elapsedTime;
+        if (alpha <= 0f)
+            alpha = 0f;
+
+        Size -= new Vector2(1f, 1f);
+        Position += new Vector2(0.5f, 0.5f);
+    }
+
+    private void StartDrowningAnim()
+    {
+        speed = 0;
+        drowning = true;
+        controllsEnabled = false;
+        LogsSystem.Log("Drown in water");
+    }
+
+    private void DrowningAnim()
     {
         alpha -= 1f * elapsedTime;
         if (alpha <= 0f)
