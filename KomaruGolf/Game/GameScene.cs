@@ -80,6 +80,16 @@ public class GameScene
         DrawRainbowString(spriteBatch, Game1.Font, $"Score: {score}", scorePos, Color.White);
         DrawRainbowString(spriteBatch, Game1.Font, $"Time: {seconds}s", timePos, Color.White);
 
+        string resText = $"Respawn in: {ball.ResTime + 1}";
+        float resStringXOffset = Game1.Font.MeasureString(resText).X / 2f;
+
+        if (ball.Drowning)
+            DrawRainbowString(spriteBatch, Game1.Font, resText, new Vector2(
+                Game1.Instance.Graphics.PreferredBackBufferWidth / 2f - resStringXOffset,
+                Game1.Instance.Graphics.PreferredBackBufferHeight - 45),
+                Color.White);
+
+
         if (endScreen)
         {
             spriteBatch.Draw(pixel, new Rectangle(0, 0, 1000, 1000), Color.Black * 0.5f);

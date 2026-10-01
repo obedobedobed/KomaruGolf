@@ -39,10 +39,12 @@ public class Ball (Texture2D texture, Texture2D pixelTexture)
 
     private bool finishing = false;
     private bool drowning = false;
+    public bool Drowning { get { return drowning; } }
     private float alpha = 1f;
 
     private const float AFTER_WATER_RESPAWN_TIME = 2f;
     private float awRespawnTimeNow = AFTER_WATER_RESPAWN_TIME;
+    public int ResTime { get { return (int)awRespawnTimeNow; } }
 
     private Point ricochetScoreRange = new Point(10, 15);
     private Point finishScoreRange = new Point(100, 110);
