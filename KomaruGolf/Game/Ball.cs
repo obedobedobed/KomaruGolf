@@ -142,6 +142,9 @@ public class Ball (Texture2D texture, Texture2D pixelTexture)
                         if (checkedRicochet)
                             break;
 
+                        if (tile.Sticky)
+                            speed = 0f;
+
                         BallDir ballDir = BallDir.None;
 
                         if (direction.X >= 0 && direction.Y >= 0)

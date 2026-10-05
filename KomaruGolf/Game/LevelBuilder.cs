@@ -50,6 +50,12 @@ public static class LevelBuilder
 
                         finalList.Add(wtTile);
                         break;
+                    case '%':
+                        var swTile = new StickyWall();
+                        swTile.Load(new Vector2(xPos, yPos));
+
+                        finalList.Add(swTile);
+                        break;
                 }
 
                 xPos += Tile.TILE_SIZE;

@@ -11,6 +11,7 @@ public static class TilesTextures
     public const int SAND_INDEX = 2;
     public const int WATER_INDEX = 3;
     public const int FINISH_INDEX = 4;
+    public const int STICKY_WALL_INDEX = 5;
 
     public static Dictionary<int, Texture2D> indexToTexture = new Dictionary<int, Texture2D>();
 
@@ -21,5 +22,6 @@ public static class TilesTextures
         indexToTexture.Add(SAND_INDEX, Content.Load<Texture2D>("Sprites/Sand"));
         indexToTexture.Add(WATER_INDEX, Content.Load<Texture2D>("Sprites/Water"));
         indexToTexture.Add(FINISH_INDEX, Content.Load<Texture2D>("Sprites/Finish"));
+        indexToTexture.Add(STICKY_WALL_INDEX, Content.Load<Texture2D>("Sprites/StickyWall"));
     }
 }

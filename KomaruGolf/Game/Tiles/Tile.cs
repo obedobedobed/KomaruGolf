@@ -14,6 +14,7 @@ public class Tile
 
     // Wall parameters
     public float RicochetStrength { get; protected set; }
+    public bool Sticky { get; protected set; }
 
     // Ground parameters
     public float SpeedMultiplier { get; protected set; }
